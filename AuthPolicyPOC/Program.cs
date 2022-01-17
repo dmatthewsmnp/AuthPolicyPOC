@@ -32,8 +32,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				};
 			});
 
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, AuthPolicyPOC.Tests.AuthorizePolicyProvider>();
-builder.Services.AddSingleton<IAuthorizationHandler, AuthPolicyPOC.Tests.AuthorizationHandler>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, AuthPolicyPOC.Authorization.AuthorizationPolicyProvider>();
+builder.Services.AddSingleton<IAuthorizationHandler, AuthPolicyPOC.Authorization.AuthorizationHandler>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
