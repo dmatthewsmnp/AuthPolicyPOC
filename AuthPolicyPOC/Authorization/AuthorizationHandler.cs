@@ -1,6 +1,11 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using AuthPolicyPOC.Authorization.Requirements;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace AuthPolicyPOC.Authorization;
 
@@ -57,7 +62,6 @@ public class AuthorizationHandler : IAuthorizationHandler
 						}
 						else
 						{
-							_logger.LogDebug("Requirement failed for {Requirement}", authRequirement.RequirementDescriptor);
 							context.Fail();
 							break;
 						}

@@ -1,6 +1,8 @@
+using System;
 using AuthPolicyPOC.Authorization.Attributes;
 using AuthPolicyPOC.Authorization.Resolvers;
 using AuthPolicyPOC.Examples;
+using AuthPolicyPOC.Examples.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,37 +12,63 @@ namespace AuthPolicyPOC.Controllers;
 [Route("[controller]")]
 public class TestController : ControllerBase
 {
+	#region General
 	[HttpGet("pubping")] // This route should be allowed due to explicit AllowAnonymous
 	[AllowAnonymous]
 	public string PublicPing() => DateTime.Now.ToString();
 
 	[HttpGet("privping")] // This route should get 401 due to no authorization type
 	public string PrivatePing() => DateTime.Now.ToString();
+	#endregion
 
-	[HttpGet("{guid}/{name}")]
-	[GuidRequirement(typeof(UriGuidResolver), typeof(GuidRecognizedRequirementHandler), "1")]
-	public string GetOne(Guid guid, string name)
+	#region PaymentCreds
+	[HttpPost("paymentcred")]
+	[ClassRequirement(typeof(PaymentCredRequest), typeof(HasAccessToAllAccessMapEntitiesRequirementHandler))]
+	public string PostPaymentCred([FromBody] PaymentCredRequest request)
 	{
-		return $"Hello from one, {name}";
+		return $"Created PaymentCred {request.credTypeID}";
 	}
 
-	[HttpGet("one/{guid}/{name}")]
-	[GuidRequirement(typeof(UriGuidResolver), typeof(GuidRecognizedRequirementHandler), "2")]
-	public string GetTwo(Guid guid, string name)
+
+	[HttpDelete("paymentcred/{PaymentCredGUID}")]
+	[GuidRequirement(typeof(UriGuidResolver), typeof(HasAccessToPaymentCredUpdateAndDeleteRequirementHandler), "2")]
+	public string DeletePaymentCred(Guid PaymentCredGUID)
 	{
-		return $"Hello from two, {name}";
+		return $"Deleted {PaymentCredGUID}";
 	}
 
-	[HttpPost("tempmodel")]
-	[GuidRequirement(typeof(JsonBodyGuidResolver<TempModel>), typeof(GuidRecognizedRequirementHandler), "Id")]
-	public string PostTemp([FromBody] TempModel model)
+	[HttpPost("paymentcred/{PaymentCredGUID}/AccessMapUpdate")]
+	[GuidRequirement(typeof(UriGuidResolver), typeof(HasAccessToPaymentCredUpdateAndDeleteRequirementHandler), "2")]
+	[ClassRequirement(typeof(AccessMapUpdateRequest), typeof(HasAccessToAllAccessMapEntitiesRequirementHandler))]
+	public string PostAccessMapUpdate(Guid PaymentCredGUID, [FromBody] AccessMapUpdateRequest request)
 	{
-		return $"Received TempModel {model.Id}:{model.SecondId}";
+		return $"Updated AccessMap {PaymentCredGUID}";
 	}
+	#endregion
 
-	public class TempModel
+	#region Guid from request model
+	public class ModelWithGuidOne
 	{
 		public Guid? Id { get; set; }
 		public Guid? SecondId { get; set; }
 	}
+	public class ModelWithGuidTwo
+	{
+		public Guid? ResourceId { get; set; }
+	}
+
+	[HttpPost("modelwithguidone")]
+	[GuidRequirement(guidValueResolver: typeof(JsonBodyGuidResolver<ModelWithGuidOne>), guidRequirementHandler: typeof(GuidRecognizedRequirementHandler), resolverArg: "Id")]
+	public string PostModelWithGuidOne([FromBody] ModelWithGuidOne model)
+	{
+		return $"Received ModelWithGuidOne {model.Id}:{model.SecondId}";
+	}
+
+	[HttpPost("modelwithguidtwo")]
+	[GuidRequirement(guidValueResolver: typeof(JsonBodyGuidResolver<ModelWithGuidTwo>), guidRequirementHandler: typeof(GuidRecognizedRequirementHandler), resolverArg: "ResourceId")]
+	public string PostModelWithGuidTwo([FromBody] ModelWithGuidTwo model)
+	{
+		return $"Received ModelWithGuidTwo {model.ResourceId}";
+	}
+	#endregion
 }

@@ -1,4 +1,8 @@
-﻿namespace AuthPolicyPOC.Authorization.Requirements;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace AuthPolicyPOC.Authorization.Requirements;
 
 /// <summary>
 /// Interface for handler class, responsible for checking resource against user claims

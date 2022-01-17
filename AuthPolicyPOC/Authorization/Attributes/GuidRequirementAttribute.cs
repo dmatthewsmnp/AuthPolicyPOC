@@ -1,13 +1,15 @@
-﻿using AuthPolicyPOC.Authorization.Requirements;
+﻿using System;
+using AuthPolicyPOC.Authorization.Requirements;
 using AuthPolicyPOC.Authorization.Resolvers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthPolicyPOC.Authorization.Attributes;
 
 /// <summary>
 /// Attribute for applying authorization policy against a resource identified by a Guid value
 /// </summary>
-public class GuidRequirementAttribute :  AuthorizeAttribute
+public class GuidRequirementAttribute : AuthorizeAttribute
 {
 	/// <summary>
 	/// Leading string for identifying an authorization policy of this type
@@ -42,7 +44,7 @@ public class GuidRequirementAttribute :  AuthorizeAttribute
 	/// <summary>
 	/// Construct AuthorizationRequirement object with resolver and handler specified by policyName string
 	/// </summary>
-	public static AuthorizationRequirement<Guid?> GetAuthorizationRequirement(string policyName)
+	public static AuthorizationRequirement<Guid?> GetAuthorizationRequirement(IServiceProvider isp, string policyName)
 	{
 		var policySegments = policyName.Split("_");
 		if (policySegments.Length == 4)
@@ -53,8 +55,8 @@ public class GuidRequirementAttribute :  AuthorizeAttribute
 			{
 				return new AuthorizationRequirement<Guid?>(
 					policyName: POLICY_PREFIX[..^1],
-					resourceResolver: Activator.CreateInstance(resolverType, policySegments[3]) as IResourceResolver<Guid?>,
-					requirementHandler: Activator.CreateInstance(requirementType) as IRequirementHandler<Guid?>);
+					resourceResolver: ActivatorUtilities.CreateInstance(isp, resolverType, policySegments[3]) as IResourceResolver<Guid?>,
+					requirementHandler: ActivatorUtilities.CreateInstance(isp, requirementType) as IRequirementHandler<Guid?>);
 			}
 		}
 

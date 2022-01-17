@@ -1,4 +1,8 @@
-﻿namespace AuthPolicyPOC.Authorization.Resolvers;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+
+namespace AuthPolicyPOC.Authorization.Resolvers;
 
 /// <summary>
 /// Resolver to extract a Guid value from request Uri/route

@@ -1,5 +1,9 @@
-﻿using AuthPolicyPOC.Authorization.Resolvers;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AuthPolicyPOC.Authorization.Resolvers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace AuthPolicyPOC.Authorization.Requirements;
 

@@ -1,5 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace AuthPolicyPOC.Authorization.Resolvers;
 
@@ -33,6 +37,7 @@ public class JsonBodyGuidResolver<T> : IResourceResolver<Guid?> where T : class
 			context.Request.EnableBuffering();
 			using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
 			var bodyContent = await reader.ReadToEndAsync();
+
 			// Reset position of request body stream and discard buffered data:
 			context.Request.Body.Position = 0;
 			reader.DiscardBufferedData();

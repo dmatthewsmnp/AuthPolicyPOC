@@ -1,4 +1,6 @@
-﻿using AuthPolicyPOC.Authorization.Attributes;
+﻿using System;
+using System.Threading.Tasks;
+using AuthPolicyPOC.Authorization.Attributes;
 using AuthPolicyPOC.Authorization.Requirements;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +12,11 @@ namespace AuthPolicyPOC.Authorization;
 /// </summary>
 public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider
 {
+	#region Fields and properties
+	private readonly IServiceProvider _serviceProvider;
+	public AuthorizationPolicyProvider(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
+	#endregion
+
 	/// <summary>
 	/// Create authorization requirement object from policyName, use to construct AuthorizationPolicy
 	/// </summary>
@@ -20,9 +27,13 @@ public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider
 		#region Create requirement from policyName
 		if (policyName.StartsWith(GuidRequirementAttribute.POLICY_PREFIX, StringComparison.OrdinalIgnoreCase))
 		{
-			requirement = GuidRequirementAttribute.GetAuthorizationRequirement(policyName);
+			requirement = GuidRequirementAttribute.GetAuthorizationRequirement(_serviceProvider, policyName);
 		}
-		// TODO: Place handlers for other policy types...
+		else if (policyName.StartsWith(ClassRequirementAttribute.POLICY_PREFIX, StringComparison.OrdinalIgnoreCase))
+		{
+			requirement = ClassRequirementAttribute.GetAuthorizationRequirement(_serviceProvider, policyName);
+		}
+		// NOTE: Place handlers for other policyName/RequirementAttribute pairs here...
 		#endregion
 
 		// Construct AuthorizationPolicy from requirement (if requirement was not set, will use default policy)

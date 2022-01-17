@@ -1,4 +1,7 @@
-﻿namespace AuthPolicyPOC.Authorization.Resolvers;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+
+namespace AuthPolicyPOC.Authorization.Resolvers;
 
 /// <summary>
 /// Interface for class responsible for retrieving the identifier of the resource being protected
