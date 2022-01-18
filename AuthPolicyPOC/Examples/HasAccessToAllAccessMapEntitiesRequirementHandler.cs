@@ -21,7 +21,7 @@ public class HasAccessToAllAccessMapEntitiesRequirementHandler : IRequirementHan
 	/// <param name="clientClaims">List of clients accessible to user (not relevant for this request)</param>
 	/// <param name="userClaim">ID of requesting user</param>
 	/// <returns></returns>
-	public Task<bool> CheckRequirement(object? resource, IEnumerable<Guid>? clientClaims, Guid? userClaim)
+	public Task<bool> CheckRequirement(object? resource, List<Guid>? clientClaims, Guid? userClaim)
 	{
 		#region Extract accessMap from request object based on type
 		IEnumerable<EntityListEntry>? accessMap = null;

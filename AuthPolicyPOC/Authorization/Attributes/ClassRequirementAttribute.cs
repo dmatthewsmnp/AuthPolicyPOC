@@ -7,20 +7,19 @@ using Microsoft.Extensions.DependencyInjection;
 namespace AuthPolicyPOC.Authorization.Attributes;
 
 /// <summary>
-/// Attribute for applying authorization policy against a class object deserialized from request body
+/// Attribute for an authorization policy to be applied against a class object deserialized from request body
 /// </summary>
 public class ClassRequirementAttribute : AuthorizeAttribute
 {
 	/// <summary>
 	/// Leading string for identifying an authorization policy of this type
 	/// </summary>
-	/// <param name="="
-	public const string POLICY_PREFIX = "ClassRequirement_";
+	public const string POLICY_PREFIX = "ClassRequirement_|_";
 
 	/// <summary>
 	/// Public constructor
 	/// </summary>
-	/// <param name="classToResolve">Type to be deserialized from request body</param>
+	/// <param name="classToResolve">Type to be deserialized from request body (must be a reference type)</param>
 	/// <param name="classRequirementHandler">Type of IRequirementHandler able to enforce policy against an object of type classToResolve</param>
 	/// <exception cref="ArgumentException"></exception>
 	public ClassRequirementAttribute(Type classToResolve, Type classRequirementHandler)
@@ -28,7 +27,7 @@ public class ClassRequirementAttribute : AuthorizeAttribute
 		// Validate types, and ensure that casting at authorization time will be possible:
 		if (classToResolve.IsValueType)
 		{
-			throw new ArgumentException("Invalid Type for requirement (must be a class type)", nameof(classToResolve));
+			throw new ArgumentException("Invalid Type for requirement (must be a reference type)", nameof(classToResolve));
 		}
 		else if (!typeof(IRequirementHandler<object?>).IsAssignableFrom(classRequirementHandler))
 		{
@@ -36,28 +35,27 @@ public class ClassRequirementAttribute : AuthorizeAttribute
 		}
 		else
 		{
-			// Construct base class Policy name string from prefix, resolver and handler types, and optional argument(s):
-			Policy = $"{POLICY_PREFIX}{classToResolve.AssemblyQualifiedName}_{classRequirementHandler.AssemblyQualifiedName}";
+			// Construct base class Policy name string from prefix, resolver and handler types:
+			Policy = $"{POLICY_PREFIX}{classToResolve.AssemblyQualifiedName}_|_{classRequirementHandler.AssemblyQualifiedName}";
 		}
 	}
 
 	#region Static utility methods
 	/// <summary>
-	/// Construct AuthorizationRequirement object with resolver and handler specified by policyName string
+	/// Construct ResourceAuthorizationRequirement object with resolver and handler specified by policyName string
 	/// </summary>
-	public static AuthorizationRequirement<object?> GetAuthorizationRequirement(IServiceProvider isp, string policyName)
+	public static ResourceAuthorizationRequirement<object?> GetAuthorizationRequirement(IServiceProvider isp, string policyName)
 	{
-		var policySegments = policyName.Split("_");
+		var policySegments = policyName.Split("_|_");
 		if (policySegments.Length == 3)
 		{
-			var classType = Type.GetType(policySegments[1], false, true);
-			var requirementType = Type.GetType(policySegments[2], false, true);
-			if (classType != null && requirementType != null)
+			var classToResolve = Type.GetType(policySegments[1], false, true);
+			var classRequirementHandler = Type.GetType(policySegments[2], false, true);
+			if (classToResolve != null && classRequirementHandler != null)
 			{
-				return new AuthorizationRequirement<object?>(
-					policyName: POLICY_PREFIX[..^1],
-					resourceResolver: ActivatorUtilities.CreateInstance<JsonBodyClassResolver>(isp, classType),
-					requirementHandler: ActivatorUtilities.CreateInstance(isp, requirementType) as IRequirementHandler<object?>);
+				return new ResourceAuthorizationRequirement<object?>(
+					resourceResolver: ActivatorUtilities.CreateInstance<JsonBodyClassResolver>(isp, classToResolve),
+					requirementHandler: ActivatorUtilities.CreateInstance(isp, classRequirementHandler) as IRequirementHandler<object?>);
 			}
 		}
 

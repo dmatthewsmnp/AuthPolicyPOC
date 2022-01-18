@@ -10,11 +10,11 @@ namespace AuthPolicyPOC.Authorization;
 /// <summary>
 /// Provider for constructing AuthorizationPolicies from policy names at request time
 /// </summary>
-public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider
+public class ApiAuthorizationPolicyProvider : IAuthorizationPolicyProvider
 {
 	#region Fields and properties
 	private readonly IServiceProvider _serviceProvider;
-	public AuthorizationPolicyProvider(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
+	public ApiAuthorizationPolicyProvider(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 	#endregion
 
 	/// <summary>
@@ -33,7 +33,7 @@ public class AuthorizationPolicyProvider : IAuthorizationPolicyProvider
 		{
 			requirement = ClassRequirementAttribute.GetAuthorizationRequirement(_serviceProvider, policyName);
 		}
-		// NOTE: Place handlers for other policyName/RequirementAttribute pairs here...
+		// NOTE: Place handlers for other policyName/RequirementAttribute pairs here as needed...
 		#endregion
 
 		// Construct AuthorizationPolicy from requirement (if requirement was not set, will use default policy)

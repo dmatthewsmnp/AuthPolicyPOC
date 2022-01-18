@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AuthPolicyPOC.Examples;
 
-public class HasAccessToPaymentCredUpdateAndDeleteRequirementHandler : IRequirementHandler<Guid?>
+public class HasAccessToPaymentCredRequirementHandler : IRequirementHandler<Guid?>
 {
 	/// <summary>
 	/// Simulate database returning list of payment creds attached to this PortalUser
@@ -18,14 +18,14 @@ public class HasAccessToPaymentCredUpdateAndDeleteRequirementHandler : IRequirem
 	};
 
 	private readonly ILogger _logger;
-	public HasAccessToPaymentCredUpdateAndDeleteRequirementHandler(ILogger<HasAccessToPaymentCredUpdateAndDeleteRequirementHandler> logger)
+	public HasAccessToPaymentCredRequirementHandler(ILogger<HasAccessToPaymentCredRequirementHandler> logger)
 		=> _logger = logger;
 
 	/// <summary>
-	/// Ensure user has access to update/delete a specific PaymentCredGUID
+	/// Ensure user has access to make payments with a specific PaymentCredGUID
 	/// </summary>
-	/// <param name="resource">PaymentCredGUID being requested</param>
-	/// <param name="clientClaims">List of clients accessible to user (not relevant for this request)</param>
+	/// <param name="resource">PaymentCredGUID being used</param>
+	/// <param name="clientClaims">List of clients accessible to user</param>
 	/// <param name="userClaim">ID of requesting user</param>
 	/// <returns></returns>
 	public Task<bool> CheckRequirement(Guid? resource, List<Guid>? clientClaims, Guid? userClaim)

@@ -14,7 +14,7 @@ public class GuidRequirementAttribute : AuthorizeAttribute
 	/// <summary>
 	/// Leading string for identifying an authorization policy of this type
 	/// </summary>
-	public const string POLICY_PREFIX = "GuidRequirement_";
+	public const string POLICY_PREFIX = "GuidRequirement_|_";
 
 	/// <summary>
 	/// Public constructor
@@ -36,25 +36,24 @@ public class GuidRequirementAttribute : AuthorizeAttribute
 		else
 		{
 			// Construct base class Policy name string from prefix, resolver and handler types, and optional argument(s):
-			Policy = $"{POLICY_PREFIX}{guidValueResolver.AssemblyQualifiedName}_{guidRequirementHandler.AssemblyQualifiedName}_{resolverArg}";
+			Policy = $"{POLICY_PREFIX}{guidValueResolver.AssemblyQualifiedName}_|_{guidRequirementHandler.AssemblyQualifiedName}_|_{resolverArg}";
 		}
 	}
 
 	#region Static utility methods
 	/// <summary>
-	/// Construct AuthorizationRequirement object with resolver and handler specified by policyName string
+	/// Construct ResourceAuthorizationRequirement object with resolver and handler specified by policyName string
 	/// </summary>
-	public static AuthorizationRequirement<Guid?> GetAuthorizationRequirement(IServiceProvider isp, string policyName)
+	public static ResourceAuthorizationRequirement<Guid?> GetAuthorizationRequirement(IServiceProvider isp, string policyName)
 	{
-		var policySegments = policyName.Split("_");
+		var policySegments = policyName.Split("_|_");
 		if (policySegments.Length == 4)
 		{
 			var resolverType = Type.GetType(policySegments[1], false, true);
 			var requirementType = Type.GetType(policySegments[2], false, true);
 			if (resolverType != null && requirementType != null)
 			{
-				return new AuthorizationRequirement<Guid?>(
-					policyName: POLICY_PREFIX[..^1],
+				return new ResourceAuthorizationRequirement<Guid?>(
 					resourceResolver: ActivatorUtilities.CreateInstance(isp, resolverType, policySegments[3]) as IResourceResolver<Guid?>,
 					requirementHandler: ActivatorUtilities.CreateInstance(isp, requirementType) as IRequirementHandler<Guid?>);
 			}

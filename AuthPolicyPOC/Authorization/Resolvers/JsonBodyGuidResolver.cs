@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 namespace AuthPolicyPOC.Authorization.Resolvers;
 
 /// <summary>
-/// Resolver to extract a Guid value from a member property of a Json-serialized request model
+/// Resolver to extract a Guid value from a member property of a class deserialized from JSON request body
 /// </summary>
 /// <typeparam name="T">Type into which request body should be deserialized</typeparam>
 /// <remarks>

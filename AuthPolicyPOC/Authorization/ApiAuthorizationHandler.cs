@@ -12,11 +12,11 @@ namespace AuthPolicyPOC.Authorization;
 /// <summary>
 /// Handler for all authorization policies applied to Controller methods within this API
 /// </summary>
-public class AuthorizationHandler : IAuthorizationHandler
+public class ApiAuthorizationHandler : IAuthorizationHandler
 {
 	#region Fields and constructor
 	private readonly ILogger _logger;
-	public AuthorizationHandler(ILogger<AuthorizationHandler> logger) => _logger = logger;
+	public ApiAuthorizationHandler(ILogger<ApiAuthorizationHandler> logger) => _logger = logger;
 	#endregion
 
 	/// <summary>
@@ -48,12 +48,12 @@ public class AuthorizationHandler : IAuthorizationHandler
 			{
 				#region Process pending requirements against user claims
 				// Retrieve clientAccess claims (as list of Guids):
-				var clientClaims = context.User.FindAll("clientAccess")?.Select(c => Guid.Parse(c.Value));
+				var clientClaims = context.User.FindAll("clientAccess")?.Select(c => Guid.Parse(c.Value))?.ToList();
 
 				// Iterate through pending requirements list, until one fails or all are successful:
 				foreach (var requirement in context.PendingRequirements)
 				{
-					if (requirement is AuthorizationRequirement authRequirement)
+					if (requirement is ResourceAuthorizationRequirement authRequirement)
 					{
 						// Expected requirement type - run requirement check and set result:
 						if (await authRequirement.CheckRequirement(httpContext, clientClaims, userClaim))
