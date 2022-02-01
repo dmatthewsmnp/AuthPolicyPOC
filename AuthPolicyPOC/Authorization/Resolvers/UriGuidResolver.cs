@@ -16,7 +16,7 @@ public class UriGuidResolver : IResourceResolver<Guid?>
 {
 	#region Fields and constructor
 	private readonly int _position;
-	public UriGuidResolver(string? position = null)
+	public UriGuidResolver(string position)
 	{
 		if ((int.TryParse(position, out _position) ? _position : -1) < 0)
 		{

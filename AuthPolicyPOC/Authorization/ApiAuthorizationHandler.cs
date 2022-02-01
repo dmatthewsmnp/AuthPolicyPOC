@@ -10,7 +10,8 @@ using Microsoft.Extensions.Logging;
 namespace AuthPolicyPOC.Authorization;
 
 /// <summary>
-/// Handler for all authorization policies applied to Controller methods within this API
+/// Handler for executing all authorization policies applied to Controller methods within this API
+/// and rehydrated from ApiAuthorizationPolicyProvider
 /// </summary>
 public class ApiAuthorizationHandler : IAuthorizationHandler
 {
@@ -38,49 +39,55 @@ public class ApiAuthorizationHandler : IAuthorizationHandler
 				_logger.LogDebug("No claims were found for the user.");
 				context.Fail();
 			}
-			// Ensure logged-in user claim (as Guid) is available:
-			else if (!Guid.TryParse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userClaim))
-			{
-				_logger.LogDebug("No user name claim was found.");
-				context.Fail();
-			}
 			else
 			{
-				#region Process pending requirements against user claims
-				// Retrieve clientAccess claims (as list of Guids):
-				var clientClaims = context.User.FindAll("clientAccess")?.Select(c => Guid.Parse(c.Value))?.ToList();
-
-				// Iterate through pending requirements list, until one fails or all are successful:
-				foreach (var requirement in context.PendingRequirements)
+				// Retrieve Guid identifier of logged-in user from claims:
+				var userClaim = httpContext.User.FindAll(ClaimTypes.NameIdentifier)
+					.Select<Claim, Guid?>(c => Guid.TryParse(c.Value, out var guid) ? guid : null) // Convert valid claims to Guid
+					.FirstOrDefault(guid => guid != null);
+				if (userClaim == null)
 				{
-					if (requirement is ResourceAuthorizationRequirement authRequirement)
+					_logger.LogDebug("No user name claim was found.");
+					context.Fail();
+				}
+				else
+				{
+					#region Process pending requirements against user claims
+					// Retrieve clientAccess claims (as list of Guids):
+					var clientClaims = context.User.FindAll("clientAccess")?.Select(c => Guid.Parse(c.Value))?.ToList();
+
+					// Iterate through pending requirements list, until one fails or all are successful:
+					foreach (var requirement in context.PendingRequirements)
 					{
-						// Expected requirement type - run requirement check and set result:
-						if (await authRequirement.CheckRequirement(httpContext, clientClaims, userClaim))
+						if (requirement is ResourceAuthorizationRequirement authRequirement)
 						{
-							context.Succeed(requirement);
+							// Expected requirement type - run requirement check and set result:
+							if (await authRequirement.CheckRequirement(httpContext, clientClaims, userClaim))
+							{
+								context.Succeed(requirement);
+							}
+							else
+							{
+								context.Fail();
+								break;
+							}
+						}
+						else if (requirement is NotAuthorizedRequirement)
+						{
+							// Default decline policy - fail request silently:
+							context.Fail();
+							break;
 						}
 						else
 						{
+							// Unknown authorization requirement type - log warning and fail request:
+							_logger.LogWarning("Unhandled requirement type: {RequirementType}", requirement.GetType().FullName);
 							context.Fail();
 							break;
 						}
 					}
-					else if (requirement is NotAuthorizedRequirement)
-					{
-						// Default decline policy - fail request silently:
-						context.Fail();
-						break;
-					}
-					else
-					{
-						// Unknown authorization requirement type - log warning and fail request:
-						_logger.LogWarning("Unhandled requirement type: {RequirementType}", requirement.GetType().FullName);
-						context.Fail();
-						break;
-					}
+					#endregion
 				}
-				#endregion
 			}
 		}
 	}

@@ -9,7 +9,7 @@ namespace AuthPolicyPOC.Authorization.Attributes;
 /// <summary>
 /// Attribute for applying authorization policy against a resource identified by a Guid value
 /// </summary>
-public class GuidRequirementAttribute : AuthorizeAttribute
+public class AuthorizeByGuidAttribute : AuthorizeAttribute
 {
 	/// <summary>
 	/// Leading string for identifying an authorization policy of this type
@@ -20,9 +20,12 @@ public class GuidRequirementAttribute : AuthorizeAttribute
 	/// Public constructor
 	/// </summary>
 	/// <param name="guidValueResolver">A type of IResourceResolver able to retrieve a Guid from request context</param>
-	/// <param name="guidRequirementHandler">A type of IRequirementHandler able to enforce policy against a resource identified by Guid</param>
 	/// <param name="resolverArg">Optional argument to be passed to guidValueResolver</param>
-	public GuidRequirementAttribute(Type guidValueResolver, Type guidRequirementHandler, string? resolverArg = null)
+	/// <param name="guidRequirementHandler">A type of IRequirementHandler able to enforce policy against a resource identified by Guid</param>
+	/// <remarks>
+	/// When C#10 supports generic attributes (in preview only at development time), Type parameters here can be moved to generic arguments
+	/// </remarks>
+	public AuthorizeByGuidAttribute(Type guidValueResolver, string resolverArg, Type guidRequirementHandler)
 	{
 		// Validate types, and ensure that casting at authorization time will be possible:
 		if (!typeof(IResourceResolver<Guid?>).IsAssignableFrom(guidValueResolver))

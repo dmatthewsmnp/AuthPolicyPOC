@@ -18,7 +18,7 @@ public class JsonBodyGuidResolver<T> : IResourceResolver<Guid?> where T : class
 {
 	#region Fields and constructor
 	private readonly PropertyInfo _propertyInfo;
-	public JsonBodyGuidResolver(string? fieldname = null)
+	public JsonBodyGuidResolver(string fieldname)
 	{
 		_propertyInfo = typeof(T).GetProperty(fieldname ?? throw new ArgumentNullException(nameof(fieldname)))
 			?? throw new ArgumentException($"{fieldname} is not a property of {typeof(T).FullName}", nameof(fieldname));

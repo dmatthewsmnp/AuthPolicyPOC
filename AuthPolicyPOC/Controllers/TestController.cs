@@ -30,7 +30,7 @@ public class TestController : ControllerBase
 	/// resolver will deserialize PaymentCredRequest from request body and pass to requirement handler
 	/// </remarks>
 	[HttpPost("paymentcred")]
-	[ClassRequirement(classToResolve: typeof(PaymentCredRequest), classRequirementHandler: typeof(HasAccessToAllAccessMapEntitiesRequirementHandler))]
+	[AuthorizeByClass(classToResolve: typeof(PaymentCredRequest), classRequirementHandler: typeof(HasAccessToAllAccessMapEntitiesRequirementHandler))]
 	public string PostPaymentCred([FromBody] PaymentCredRequest request)
 	{
 		return $"Created PaymentCred {request.credTypeID}";
@@ -43,7 +43,7 @@ public class TestController : ControllerBase
 	/// User must have access to update/delete this payment credential; resolver will extract PaymentCredGUID from route token 2
 	/// </remarks>
 	[HttpDelete("paymentcred/{PaymentCredGUID}")]
-	[GuidRequirement(guidValueResolver: typeof(UriGuidResolver), resolverArg: "2", guidRequirementHandler: typeof(HasAccessToPaymentCredUpdateAndDeleteRequirementHandler))]
+	[AuthorizeByGuid(guidValueResolver: typeof(UriGuidResolver), resolverArg: "2", guidRequirementHandler: typeof(HasAccessToPaymentCredUpdateAndDeleteRequirementHandler))]
 	public string DeletePaymentCred(Guid PaymentCredGUID)
 	{
 		return $"Deleted {PaymentCredGUID}";
@@ -57,8 +57,8 @@ public class TestController : ControllerBase
 	/// - User must have access to all entities in AccessMap; resolver will deserialize AccessMapUpdate from request body and pass to requirement handler
 	/// </remarks>
 	[HttpPost("paymentcred/{PaymentCredGUID}/AccessMapUpdate")]
-	[GuidRequirement(guidValueResolver: typeof(UriGuidResolver), resolverArg: "2", guidRequirementHandler: typeof(HasAccessToPaymentCredUpdateAndDeleteRequirementHandler))]
-	[ClassRequirement(typeof(AccessMapUpdateRequest), typeof(HasAccessToAllAccessMapEntitiesRequirementHandler))]
+	[AuthorizeByGuid(guidValueResolver: typeof(UriGuidResolver), resolverArg: "2", guidRequirementHandler: typeof(HasAccessToPaymentCredUpdateAndDeleteRequirementHandler))]
+	[AuthorizeByClass(typeof(AccessMapUpdateRequest), typeof(HasAccessToAllAccessMapEntitiesRequirementHandler))]
 	public string PostAccessMapUpdate(Guid PaymentCredGUID, [FromBody] AccessMapUpdateRequest request)
 	{
 		return $"Updated AccessMap {PaymentCredGUID}";
@@ -71,7 +71,7 @@ public class TestController : ControllerBase
 	/// User must have access to view this payment credential; resolver will extract PaymentCredGUID from route token 2
 	/// </remarks>
 	[HttpGet("paymentcred/{PaymentCredGUID}/Entities")]
-	[GuidRequirement(guidValueResolver: typeof(UriGuidResolver), resolverArg: "2", guidRequirementHandler: typeof(HasAccessToPaymentCredRequirementHandler))]
+	[AuthorizeByGuid(guidValueResolver: typeof(UriGuidResolver), resolverArg: "2", guidRequirementHandler: typeof(HasAccessToPaymentCredRequirementHandler))]
 	public string GetEntitiesByPaymentCred(Guid PaymentCredGUID)
 	{
 		return $"Entities retrieved {PaymentCredGUID}";
@@ -86,7 +86,7 @@ public class TestController : ControllerBase
 	/// User must have access to this payment credential; resolver will deserialize PaymentRequest from request body and check access against paymentCredGUID property
 	/// </remarks>
 	[HttpPost("payment")]
-	[GuidRequirement(guidValueResolver: typeof(JsonBodyGuidResolver<PaymentRequest>), resolverArg: "paymentCredGUID", guidRequirementHandler: typeof(HasAccessToPaymentCredRequirementHandler))]
+	[AuthorizeByGuid(guidValueResolver: typeof(JsonBodyGuidResolver<PaymentRequest>), resolverArg: "paymentCredGUID", guidRequirementHandler: typeof(HasAccessToPaymentCredRequirementHandler))]
 	public string PostPayment([FromBody] PaymentRequest request)
 	{
 		return $"Created payment for ${request.amount}";

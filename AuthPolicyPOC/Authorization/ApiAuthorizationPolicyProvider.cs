@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace AuthPolicyPOC.Authorization;
 
 /// <summary>
-/// Provider for constructing AuthorizationPolicies from policy names at request time
+/// Provider for constructing AuthorizationPolicy objects at request time by rehydrating
+/// data from authorization attribute policy strings
 /// </summary>
 public class ApiAuthorizationPolicyProvider : IAuthorizationPolicyProvider
 {
@@ -25,13 +26,13 @@ public class ApiAuthorizationPolicyProvider : IAuthorizationPolicyProvider
 		IAuthorizationRequirement? requirement = null;
 
 		#region Create requirement from policyName
-		if (policyName.StartsWith(GuidRequirementAttribute.POLICY_PREFIX, StringComparison.OrdinalIgnoreCase))
+		if (policyName.StartsWith(AuthorizeByGuidAttribute.POLICY_PREFIX, StringComparison.OrdinalIgnoreCase))
 		{
-			requirement = GuidRequirementAttribute.GetAuthorizationRequirement(_serviceProvider, policyName);
+			requirement = AuthorizeByGuidAttribute.GetAuthorizationRequirement(_serviceProvider, policyName);
 		}
-		else if (policyName.StartsWith(ClassRequirementAttribute.POLICY_PREFIX, StringComparison.OrdinalIgnoreCase))
+		else if (policyName.StartsWith(AuthorizeByClassAttribute.POLICY_PREFIX, StringComparison.OrdinalIgnoreCase))
 		{
-			requirement = ClassRequirementAttribute.GetAuthorizationRequirement(_serviceProvider, policyName);
+			requirement = AuthorizeByClassAttribute.GetAuthorizationRequirement(_serviceProvider, policyName);
 		}
 		// NOTE: Place handlers for other policyName/RequirementAttribute pairs here as needed...
 		#endregion

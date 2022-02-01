@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 namespace AuthPolicyPOC.Authorization.Resolvers;
 
 /// <summary>
-/// Interface for class responsible for resolving from request context the resource being
+/// Interface for class responsible for resolving (from request context) the resource being
 /// protected by an authorization policy
 /// </summary>
 public interface IResourceResolver<T>

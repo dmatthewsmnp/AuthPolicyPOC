@@ -45,7 +45,7 @@ public class ResourceAuthorizationRequirement<T> : ResourceAuthorizationRequirem
 	#endregion
 
 	/// <summary>
-	/// Requirement check method implementation
+	/// Requirement check method implementation - use members to perform requirement check
 	/// </summary>
 	public override async Task<bool> CheckRequirement(HttpContext? context, List<Guid>? clientClaims, Guid? userClaim)
 	{

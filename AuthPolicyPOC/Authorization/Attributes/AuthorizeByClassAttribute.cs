@@ -9,7 +9,7 @@ namespace AuthPolicyPOC.Authorization.Attributes;
 /// <summary>
 /// Attribute for an authorization policy to be applied against a class object deserialized from request body
 /// </summary>
-public class ClassRequirementAttribute : AuthorizeAttribute
+public class AuthorizeByClassAttribute : AuthorizeAttribute
 {
 	/// <summary>
 	/// Leading string for identifying an authorization policy of this type
@@ -21,8 +21,10 @@ public class ClassRequirementAttribute : AuthorizeAttribute
 	/// </summary>
 	/// <param name="classToResolve">Type to be deserialized from request body (must be a reference type)</param>
 	/// <param name="classRequirementHandler">Type of IRequirementHandler able to enforce policy against an object of type classToResolve</param>
-	/// <exception cref="ArgumentException"></exception>
-	public ClassRequirementAttribute(Type classToResolve, Type classRequirementHandler)
+	/// <remarks>
+	/// When C#10 supports generic attributes (in preview only at development time), Type parameters here can be moved to generic arguments
+	/// </remarks>
+	public AuthorizeByClassAttribute(Type classToResolve, Type classRequirementHandler)
 	{
 		// Validate types, and ensure that casting at authorization time will be possible:
 		if (classToResolve.IsValueType)
