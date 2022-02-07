@@ -29,11 +29,28 @@ public class JsonBodyClassResolver : IResourceResolver<object?>
 			context.Request.Body.Position = 0;
 			reader.DiscardBufferedData();
 
-			// Attempt to deserialize incoming data into specified type:
-			return JsonSerializer.Deserialize(bodyContent, _classType);
+			try
+			{
+				// Attempt to deserialize incoming data into specified type:
+				return JsonSerializer.Deserialize(bodyContent, _classType);
+			}
+			catch (JsonException)
+			{
+				return null;
+			}
 		}
 
 		// Request not available or unexpected content type:
 		return null;
 	}
+
+	#region Internal properties (for test access)
+	internal Type ClassType
+	{
+		get
+		{
+			return _classType;
+		}
+	}
+	#endregion
 }

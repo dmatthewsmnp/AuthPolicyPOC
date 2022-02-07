@@ -43,14 +43,31 @@ public class JsonBodyGuidResolver<T> : IResourceResolver<Guid?> where T : class
 			reader.DiscardBufferedData();
 
 			// Attempt to deserialize incoming data into specified type:
-			var requestModel = JsonSerializer.Deserialize<T>(bodyContent);
-			if (requestModel != null)
+			try
 			{
-				return _propertyInfo.GetValue(requestModel) as Guid?;
+				var requestModel = JsonSerializer.Deserialize<T>(bodyContent);
+				if (requestModel != null)
+				{
+					return _propertyInfo.GetValue(requestModel) as Guid?;
+				}
+			}
+			catch (JsonException)
+			{
+				return null;
 			}
 		}
 
 		// Request not available, unexpected content type or body could not be deserialized:
 		return null;
 	}
+
+	#region Internal properties (for test access)
+	internal string Property
+	{
+		get
+		{
+			return _propertyInfo.Name;
+		}
+	}
+	#endregion
 }

@@ -42,4 +42,14 @@ public class UriGuidResolver : IResourceResolver<Guid?>
 		// Path not available, could not be parsed or does not contain valid Guid:
 		return Task.FromResult<Guid?>(null);
 	}
+
+	#region Internal properties (for test access)
+	internal int Position
+	{
+		get
+		{
+			return _position;
+		}
+	}
+	#endregion
 }

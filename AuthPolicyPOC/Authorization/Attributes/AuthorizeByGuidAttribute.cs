@@ -20,7 +20,7 @@ public class AuthorizeByGuidAttribute : AuthorizeAttribute
 	/// Public constructor
 	/// </summary>
 	/// <param name="guidValueResolver">A type of IResourceResolver able to retrieve a Guid from request context</param>
-	/// <param name="resolverArg">Optional argument to be passed to guidValueResolver</param>
+	/// <param name="resolverArg">Argument to be passed to guidValueResolver (required)</param>
 	/// <param name="guidRequirementHandler">A type of IRequirementHandler able to enforce policy against a resource identified by Guid</param>
 	/// <remarks>
 	/// When C#10 supports generic attributes (in preview only at development time), Type parameters here can be moved to generic arguments
@@ -32,13 +32,17 @@ public class AuthorizeByGuidAttribute : AuthorizeAttribute
 		{
 			throw new ArgumentException("Invalid resource resolver type", nameof(guidValueResolver));
 		}
+		else if (string.IsNullOrEmpty(resolverArg))
+		{
+			throw new ArgumentException("Missing resource resolver argument", nameof(resolverArg));
+		}
 		else if (!typeof(IRequirementHandler<Guid?>).IsAssignableFrom(guidRequirementHandler))
 		{
 			throw new ArgumentException("Invalid requirement handler type", nameof(guidRequirementHandler));
 		}
 		else
 		{
-			// Construct base class Policy name string from prefix, resolver and handler types, and optional argument(s):
+			// Construct base class Policy name string from prefix, resolver and handler types, resolver argument(s):
 			Policy = $"{POLICY_PREFIX}{guidValueResolver.AssemblyQualifiedName}_|_{guidRequirementHandler.AssemblyQualifiedName}_|_{resolverArg}";
 		}
 	}

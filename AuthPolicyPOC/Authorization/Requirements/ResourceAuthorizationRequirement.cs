@@ -51,4 +51,21 @@ public class ResourceAuthorizationRequirement<T> : ResourceAuthorizationRequirem
 	{
 		return await _requirementHandler.CheckRequirement(await _resourceResolver.ResolveResource(context), clientClaims, userClaim);
 	}
+
+	#region Internal properties (for test access)
+	internal IResourceResolver<T?> ResourceResolver
+	{
+		get
+		{
+			return _resourceResolver;
+		}
+	}
+	internal Type RequirementHandlerType
+	{
+		get
+		{
+			return _requirementHandler.GetType();
+		}
+	}
+	#endregion
 }

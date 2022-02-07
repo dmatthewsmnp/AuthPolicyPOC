@@ -34,7 +34,7 @@ public class ApiAuthorizationHandler : IAuthorizationHandler
 				context.Fail();
 			}
 			// Ensure claims are present in user token:
-			else if (!(httpContext.User?.Claims?.Any() ?? false))
+			else if (!(context.User?.Claims?.Any() ?? false))
 			{
 				_logger.LogDebug("No claims were found for the user.");
 				context.Fail();
@@ -42,7 +42,7 @@ public class ApiAuthorizationHandler : IAuthorizationHandler
 			else
 			{
 				// Retrieve Guid identifier of logged-in user from claims:
-				var userClaim = httpContext.User.FindAll(ClaimTypes.NameIdentifier)
+				var userClaim = context.User.FindAll(ClaimTypes.NameIdentifier)
 					.Select<Claim, Guid?>(c => Guid.TryParse(c.Value, out var guid) ? guid : null) // Convert valid claims to Guid
 					.FirstOrDefault(guid => guid != null);
 				if (userClaim == null)

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthPolicyPOC", "AuthPolicyPOC\AuthPolicyPOC.csproj", "{EE987F38-1915-46D4-873F-391E65072337}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthPolicyPOC", "AuthPolicyPOC\AuthPolicyPOC.csproj", "{EE987F38-1915-46D4-873F-391E65072337}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthPolicyPOC.Tests", "AuthPolicyPOC.Tests\AuthPolicyPOC.Tests.csproj", "{ABAD910A-AD05-4706-B15B-37B41F8AEB33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{EE987F38-1915-46D4-873F-391E65072337}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE987F38-1915-46D4-873F-391E65072337}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE987F38-1915-46D4-873F-391E65072337}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABAD910A-AD05-4706-B15B-37B41F8AEB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABAD910A-AD05-4706-B15B-37B41F8AEB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABAD910A-AD05-4706-B15B-37B41F8AEB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABAD910A-AD05-4706-B15B-37B41F8AEB33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
